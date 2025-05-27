@@ -1,40 +1,39 @@
 <script setup>
 import { ref } from 'vue'
 
-defineProps({
-  msg: String,
-})
+const emit = defineEmits(['updateCity'])
 
-const count = ref(0)
+const predefinedCities = ref([
+  { id: 'rio', name: 'Rio de Janeiro', lat: -22.9068, lon: -43.1729 },
+  { id: 'beijing', name: 'Beijing', lat: 39.9042, lon: 116.4074 },
+  { id: 'la', name: 'Los Angeles', lat: 34.0522, lon: -118.2437 },
+])
+
+function selectCity(city) {
+  emit('updateCity', city)
+}
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
-
-  <div class="card">
-    <button type="button" @click="count++">count is {{ count }}</button>
-    <p>
-      Edit
-      <code>components/HelloWorld.vue</code> to test HMR
-    </p>
+  <div class="tabs-container">
+    <button
+      v-for="city in predefinedCities"
+      :key="city.id"
+      @click="selectCity(city)"
+    >
+      {{ city.name }}
+    </button>
   </div>
-
-  <p>
-    Check out
-    <a href="https://vuejs.org/guide/quick-start.html#local" target="_blank"
-      >create-vue</a
-    >, the official Vue + Vite starter
-  </p>
-  <p>
-    Learn more about IDE Support for Vue in the
-    <a
-      href="https://vuejs.org/guide/scaling-up/tooling.html#ide-support"
-      target="_blank"
-      >Vue Docs Scaling up Guide</a
-    >.
-  </p>
-  <p class="read-the-docs">Click on the Vite and Vue logos to learn more</p>
 </template>
 
 <style scoped>
+.tabs-container {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+button {
+  padding: 10px 15px;
+  cursor: pointer;
+}
 </style>
