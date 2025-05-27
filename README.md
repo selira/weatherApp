@@ -1,5 +1,40 @@
-# Vue 3 + Vite
+# Vue 3 + Vite Weather App
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+This is a simple weather application built with Vue 3 and Vite.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Prerequisites
+
+-   [Node.js](https://nodejs.org/) (which includes npm)
+
+## Installation & Setup
+
+1.  **Clone the repository.**
+
+2.  **Navigate to the project directory:**
+    ```bash
+    cd path/to/your/weatherApp
+    ```
+
+3.  **Install dependencies:**
+    This command will download and install all the necessary packages defined in `package.json`.
+    ```bash
+    npm install
+    ```
+
+4.  **Set up your Environment Variables:**
+    This project requires an API key from [OpenWeatherMap](https://openweathermap.org/api) to fetch weather data.
+    *   Create a new file named `.env` in the root of your project directory.
+    *   Add your OpenWeatherMap API key to this file in the following format:
+
+        ```env
+        VITE_API_KEY=your_actual_api_key_here
+        ```
+        Replace `your_actual_api_key_here` with the API key you obtained from OpenWeatherMap.
+        **Important:** Vite exposes environment variables prefixed with `VITE_` to your client-side code.
+
+5.  **Run the development server:**
+    This command starts the Vite development server, usually on `http://localhost:5173`.
+    ```bash
+    npm run dev
+    ```
+    Open your browser and navigate to the provided local URL to see the application running. The server will automatically reload if you make changes to the code.
