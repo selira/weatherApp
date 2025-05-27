@@ -1,9 +1,6 @@
 <script setup>
-// import { ref, watch, onMounted } from 'vue' // No longer needed for fetching
-// import { getWeatherForecasts } from '../services/weatherApi' // No longer needed
 
 const props = defineProps({
-  cityName: String,
   hourlyForecast: Array,
   isLoading: Boolean,
   error: String,
@@ -20,7 +17,7 @@ function formatTime(timestamp) {
 
 <template>
   <div class="next-hours-container">
-    <h3>Next 5 Hours in {{ props.cityName || 'Selected City' }}</h3>
+    <h3>Next Hours</h3>
     <div v-if="props.isLoading">Loading hourly forecast...</div>
     <div v-else-if="props.error && !props.hourlyForecast?.length" class="error">{{ props.error }}</div>
     <div v-else-if="!props.isLoading && props.hourlyForecast && props.hourlyForecast.length" class="forecast-grid">
@@ -28,13 +25,12 @@ function formatTime(timestamp) {
         <p>{{ formatTime(hour.dt) }}</p>
         <img :src="getWeatherIconUrl(hour.icon)" :alt="hour.weather?.[0]?.description || 'Weather icon'">
         <p>{{ Math.round(hour.temp) }}°C</p>
-        <p>Humidity: {{ hour.humidity }}%</p>
+        <p style="color:deepskyblue;">{{ hour.humidity }}%</p>
       </div>
     </div>
-    <div v-else-if="!props.isLoading && !props.error && props.cityName && (!props.hourlyForecast || !props.hourlyForecast.length)">
-      No hourly data available for {{ props.cityName }}.
+    <div v-else-if="!props.isLoading && !props.error && (!props.hourlyForecast || !props.hourlyForecast.length)">
+      No hourly data available.
     </div>
-    <!-- Message for no city selected is now handled by Home.vue -->
   </div>
 </template>
 
@@ -42,20 +38,26 @@ function formatTime(timestamp) {
 .next-hours-container {
   margin-bottom: 20px;
 }
+.next-hours-container h3 {
+  text-align: left
+}
 .forecast-grid {
   display: flex;
-  gap: 10px;
+  gap: 5px;
   overflow-x: auto; /* For smaller screens */
 }
 .hour-card {
   border: 1px solid #eee;
-  padding: 10px;
+  padding: 3px;
   text-align: center;
   min-width: 100px;
 }
 .hour-card img {
   width: 50px;
   height: 50px;
+}
+.hour-card p {
+  margin: 0px 0;
 }
 .error {
   color: red;

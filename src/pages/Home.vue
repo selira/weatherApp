@@ -1,14 +1,10 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import Search from '../components/Search.vue'
 import Tabs from '../components/Tabs.vue'
 import NextHours from '../components/NextHours.vue'
 import NextDays from '../components/NextDays.vue'
 import { getWeatherForecasts } from '../services/weatherApi'
-
-defineProps({
-  msg: String,
-})
 
 const currentCity = ref({})
 const hourlyForecastData = ref([])
@@ -20,7 +16,7 @@ function updateCity(city) {
   currentCity.value = city
 }
 
-async function loadWeatherData(city) {
+async function loadWeatherData(city, cached = true) {
   if (!city || !city.lat || !city.lon) {
     hourlyForecastData.value = []
     dailyForecastData.value = []
@@ -30,7 +26,7 @@ async function loadWeatherData(city) {
   isLoadingWeather.value = true
   weatherError.value = null
   try {
-    const { hourlyForecast, dailyForecast } = await getWeatherForecasts(city.lat, city.lon)
+    const { hourlyForecast, dailyForecast } = await getWeatherForecasts(city.lat, city.lon, cached)
     hourlyForecastData.value = hourlyForecast
     dailyForecastData.value = dailyForecast
   } catch (err) {
@@ -43,6 +39,15 @@ async function loadWeatherData(city) {
   }
 }
 
+function handleRefresh() {
+  if (currentCity.value && currentCity.value.lat !== undefined && currentCity.value.lon !== undefined) {
+    loadWeatherData(currentCity.value, false) // Pass false to force refresh;
+  } else {
+    // Optionally, provide feedback if no city is selected to refresh
+    console.log("No city selected to refresh.");
+  }
+}
+
 watch(currentCity, (newCity) => {
   if (newCity && newCity.lat !== undefined && newCity.lon !== undefined) {
     loadWeatherData(newCity)
@@ -52,25 +57,52 @@ watch(currentCity, (newCity) => {
     dailyForecastData.value = []
     weatherError.value = null
   }
-}, { deep: true, immediate: true }) // immediate: true if you want to load for an initial city if set
+}, { deep: true })
+
+onMounted(() => {
+  currentCity.value = {
+    id: '3451190',
+    name: 'Rio de Janeiro',
+    lat: -22.9068,
+    lon: -43.1729,
+    country: 'Brazil'
+  };
+  if (currentCity.value.id) { 
+    loadWeatherData(currentCity.value);
+  }
+});
 
 </script>
 
 <template>
-  <h1>Weather App</h1>
+  <h2>Weather App</h2>
   <div>
     <Search @updateCity="updateCity" />
-    <Tabs @updateCity="updateCity" />
+    <Tabs 
+      :selected-country-id="currentCity.id"
+      @updateCity="updateCity" 
+    />
+    <div class="refresh-container">
+      <button 
+        @click="handleRefresh" 
+        class="refresh-button" 
+        title="Refresh weather data"
+        v-if="!isLoadingWeather && currentCity.id"
+      >
+      🔄
+      </button>
+      <h3 v-if="currentCity.name" class="refresh-header">
+        {{ currentCity.name }} 
+      </h3>
+    </div>
 
     <div v-if="currentCity.name">
       <NextHours
-        :city-name="currentCity.name"
         :hourly-forecast="hourlyForecastData"
         :is-loading="isLoadingWeather"
         :error="weatherError"
       />
       <NextDays
-        :city-name="currentCity.name"
         :daily-forecast="dailyForecastData"
         :is-loading="isLoadingWeather"
         :error="weatherError"
@@ -91,5 +123,26 @@ watch(currentCity, (newCity) => {
 <style scoped>
 .error {
   color: red;
+}
+
+.refresh-button {
+  background-color: transparent;
+  border: none;
+  padding: 0px;
+  margin: 0px;
+  cursor: pointer;
+  font-size: 24px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.refresh-container {
+  position: relative;
+}
+
+.refresh-header {
+  margin: 0;
+  padding: 0;
 }
 </style>
